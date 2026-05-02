@@ -8,6 +8,8 @@ let timerInterval = null;
 let seconds   = 0;
 let drag      = null;
 let obstacles = [];
+let drawers   = [[], [], []];
+let openDrawers = new Set();
 
 // ─── Initialisation ───────────────────────────────────────────────────────
 function startGame() {
@@ -29,7 +31,7 @@ function startGame() {
 
   const grid = document.getElementById('basket-grid');
   const W = (grid.offsetWidth || 260) - 14;
-  const H = 360, SW = 62, SH = 78;
+  const H = 400, SW = 62, SH = 78;
 
   socks.forEach(sock => {
     sock.px  = 6 + Math.random() * Math.max(0, W - SW - 6);
@@ -47,11 +49,15 @@ function startGame() {
     id:  i,
   }));
 
+  drawers = [[], [], []];
+  openDrawers = new Set();
+
   document.getElementById('total-pairs').textContent = totalPairs;
   document.getElementById('pairs-grid').innerHTML =
     '<span style="color:#ccc;font-size:0.8rem;padding:4px;">まだなし</span>';
   resetSlots();
   renderBasket();
+  renderDresser();
 
   timerInterval = setInterval(() => {
     seconds++;
@@ -78,7 +84,7 @@ function renderBasket() {
     grid.appendChild(el);
   });
 
-  socks.filter(s => !s.paired).forEach(sock => {
+  socks.filter(s => !s.paired && !s.inDresser).forEach(sock => {
     const card = document.createElement('div');
     card.className = 'sock-card' + (sock.selected ? ' selected' : '');
     card.style.left   = sock.px + 'px';
@@ -152,6 +158,15 @@ function onDragMove(e) {
       e.clientX >= r.left && e.clientX <= r.right &&
       e.clientY >= r.top  && e.clientY <= r.bottom);
   });
+  for (let i = 0; i < 3; i++) {
+    const el = document.getElementById(`drawer-interior-${i}`);
+    if (!el) continue;
+    const r = el.getBoundingClientRect();
+    const over = openDrawers.has(i) &&
+      e.clientX >= r.left && e.clientX <= r.right &&
+      e.clientY >= r.top  && e.clientY <= r.bottom;
+    el.classList.toggle('drag-over', over);
+  }
 }
 
 function onDragEnd(e) {
@@ -159,14 +174,23 @@ function onDragEnd(e) {
   drag.ghost.remove();
   ['slot-a', 'slot-b'].forEach(id =>
     document.getElementById(id).classList.remove('drag-over'));
+  for (let i = 0; i < 3; i++) {
+    const el = document.getElementById(`drawer-interior-${i}`);
+    if (el) el.classList.remove('drag-over');
+  }
 
-  const moved = Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy);
-  const slot  = getSlotAt(e.clientX, e.clientY);
+  const moved    = Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy);
+  const slot     = getSlotAt(e.clientX, e.clientY);
+  const drawerId = getDrawerAt(e.clientX, e.clientY);
 
   if (slot) {
     dropOnSlot(drag.uid, slot);
+  } else if (drawerId !== null) {
+    dropOnDrawer(drag.uid, drawerId);
+  } else if (drag.fromDrawer !== undefined && moved >= 10) {
+    returnToBasket(drag.uid, drag.fromDrawer);
   } else if (moved < 10) {
-    selectSock(drag.uid);
+    if (drag.fromDrawer === undefined) selectSock(drag.uid);
   }
 
   drag = null;
@@ -296,6 +320,121 @@ function showResult() {
   badge.style.display = 'block';
   badge.textContent = '🌸「謎の花柄」の片割れは永遠に見つかりませんでした';
   document.getElementById('overlay').classList.add('show');
+}
+
+// ─── Dresser ──────────────────────────────────────────────────────────────
+function toggleDrawer(id) {
+  if (openDrawers.has(id)) {
+    openDrawers.delete(id);
+  } else {
+    openDrawers.add(id);
+  }
+  renderDresser();
+}
+
+function renderDresser() {
+  for (let i = 0; i < 3; i++) {
+    const interior = document.getElementById(`drawer-interior-${i}`);
+    const countEl  = document.getElementById(`drawer-count-${i}`);
+    if (!interior || !countEl) continue;
+
+    const isOpen = openDrawers.has(i);
+    interior.classList.toggle('open', isOpen);
+    countEl.textContent = drawers[i].length;
+
+    interior.innerHTML = '';
+    if (isOpen) {
+      drawers[i].forEach(uid => {
+        const sock = socks.find(s => s.uid === uid);
+        if (!sock) return;
+        const el = document.createElement('div');
+        el.className = 'drawer-sock';
+        el.innerHTML = createSockSVG(sock.type, `dr${i}s${uid}`);
+        el.addEventListener('pointerdown', e => onDrawerSockDown(e, uid, i));
+        interior.appendChild(el);
+      });
+    }
+  }
+}
+
+function onDrawerSockDown(e, uid, drawerId) {
+  const sock = socks.find(s => s.uid === uid);
+  if (!sock) return;
+  e.preventDefault();
+  e.stopPropagation();
+
+  const rect = e.currentTarget.getBoundingClientRect();
+  const ox = e.clientX - rect.left;
+  const oy = e.clientY - rect.top;
+
+  const ghost = document.createElement('div');
+  ghost.style.cssText = 'position:fixed;width:70px;height:88px;pointer-events:none;z-index:9999;opacity:0.92;';
+  ghost.style.filter    = 'drop-shadow(5px 8px 12px rgba(0,0,0,0.45))';
+  ghost.style.transform = 'rotate(8deg) scale(1.15)';
+  ghost.innerHTML = createSockSVG(sock.type, `dg${uid}`);
+  document.body.appendChild(ghost);
+
+  drag = { uid, ghost, ox, oy, sx: e.clientX, sy: e.clientY, fromDrawer: drawerId };
+  positionGhost(e.clientX, e.clientY);
+
+  document.addEventListener('pointermove',   onDragMove, { passive: false });
+  document.addEventListener('pointerup',     onDragEnd);
+  document.addEventListener('pointercancel', onDragEnd);
+}
+
+function getDrawerAt(x, y) {
+  for (let i = 0; i < 3; i++) {
+    if (!openDrawers.has(i)) continue;
+    const el = document.getElementById(`drawer-interior-${i}`);
+    if (!el) continue;
+    const r = el.getBoundingClientRect();
+    if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return i;
+  }
+  return null;
+}
+
+function dropOnDrawer(uid, drawerId) {
+  const sock = socks.find(s => s.uid === uid);
+  if (!sock || sock.paired) return;
+
+  if (drag.fromDrawer !== undefined) {
+    if (drag.fromDrawer === drawerId) { renderDresser(); return; }
+    drawers[drag.fromDrawer] = drawers[drag.fromDrawer].filter(id => id !== uid);
+  } else {
+    sock.inDresser = true;
+    if (sock.selected) {
+      sock.selected = false;
+      if (selected[0] === uid) selected[0] = null;
+      else if (selected[1] === uid) selected[1] = null;
+      updateSlots();
+      document.getElementById('match-btn').disabled =
+        selected.filter(s => s !== null).length < 2;
+    }
+  }
+
+  if (!drawers[drawerId].includes(uid)) drawers[drawerId].push(uid);
+  renderBasket();
+  renderDresser();
+}
+
+function returnToBasket(uid, drawerId) {
+  const sock = socks.find(s => s.uid === uid);
+  if (!sock) return;
+  drawers[drawerId] = drawers[drawerId].filter(id => id !== uid);
+  sock.inDresser = false;
+  assignBasketPos(sock);
+  renderBasket();
+  renderDresser();
+}
+
+function assignBasketPos(sock) {
+  const grid = document.getElementById('basket-grid');
+  const W = (grid.offsetWidth || 260) - 14;
+  const H = 400, SW = 62, SH = 78;
+  sock.px  = 6 + Math.random() * Math.max(0, W - SW - 6);
+  sock.py  = 6 + Math.random() * Math.max(0, H - SH - 6);
+  sock.rot = (Math.random() - 0.5) * 90;
+  sock.zi  = Math.floor(Math.random() * 25) + 1;
 }
 
 // ─── Entry point ──────────────────────────────────────────────────────────

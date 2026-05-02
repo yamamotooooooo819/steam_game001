@@ -40,8 +40,42 @@
   </div>
 
   <div class="basket">
-    <div class="basket-header">🧺 洗濯かご（クリックして選ぼう）</div>
+    <div class="basket-header">🪵 床（クリックまたはドラッグしてペアにしよう）</div>
     <div class="basket-grid" id="basket-grid"></div>
+  </div>
+
+  <div class="dresser" id="dresser">
+    <div class="dresser-top">🗄 タンス</div>
+    <div class="dresser-body">
+      <div class="drawer" id="drawer-0">
+        <div class="drawer-front" id="drawer-front-0" onclick="toggleDrawer(0)">
+          <div class="drawer-handle"></div>
+          <span class="drawer-label">引き出し 1</span>
+          <span class="drawer-count" id="drawer-count-0">0</span>
+        </div>
+        <div class="drawer-interior" id="drawer-interior-0"></div>
+      </div>
+      <div class="drawer" id="drawer-1">
+        <div class="drawer-front" id="drawer-front-1" onclick="toggleDrawer(1)">
+          <div class="drawer-handle"></div>
+          <span class="drawer-label">引き出し 2</span>
+          <span class="drawer-count" id="drawer-count-1">0</span>
+        </div>
+        <div class="drawer-interior" id="drawer-interior-1"></div>
+      </div>
+      <div class="drawer" id="drawer-2">
+        <div class="drawer-front" id="drawer-front-2" onclick="toggleDrawer(2)">
+          <div class="drawer-handle"></div>
+          <span class="drawer-label">引き出し 3</span>
+          <span class="drawer-count" id="drawer-count-2">0</span>
+        </div>
+        <div class="drawer-interior" id="drawer-interior-2"></div>
+      </div>
+    </div>
+    <div class="dresser-feet">
+      <div class="dresser-foot"></div>
+      <div class="dresser-foot"></div>
+    </div>
   </div>
 </div>
 
