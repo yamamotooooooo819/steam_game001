@@ -6,401 +6,137 @@
 <title>靴下の片割れ探し</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap');
-
   :root {
-    --bg: #1a1a2e;
-    --card: #16213e;
-    --accent: #e94560;
-    --green: #0f9b58;
-    --yellow: #f5a623;
-    --text: #eaeaea;
-    --muted: #888;
-    --border: #2a2a4a;
+    --bg: #1a1a2e; --card: #16213e; --accent: #e94560;
+    --green: #0f9b58; --yellow: #f5a623; --text: #eaeaea;
+    --muted: #888; --border: #2a2a4a;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'M PLUS Rounded 1c', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  header {
-    width: 100%;
-    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-    text-align: center;
-    padding: 18px 20px 14px;
-    border-bottom: 2px solid var(--accent);
-    position: relative;
-    overflow: hidden;
-  }
-
-  header::after {
-    content: '🧦';
-    position: absolute;
-    font-size: 5rem;
-    opacity: 0.06;
-    right: 20px;
-    top: -10px;
-    transform: rotate(20deg);
-  }
-
+  body { font-family: 'M PLUS Rounded 1c', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
+  header { width: 100%; background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); text-align: center; padding: 18px 20px 14px; border-bottom: 2px solid var(--accent); position: relative; overflow: hidden; }
+  header::after { content: '🧦'; position: absolute; font-size: 5rem; opacity: 0.06; right: 20px; top: -10px; transform: rotate(20deg); }
   header h1 { font-size: 1.6rem; font-weight: 800; color: #fff; }
   header .subtitle { font-size: 0.75rem; color: var(--muted); margin-top: 3px; }
-
-  .timer-wrap {
-    width: 100%;
-    background: #0d0d1a;
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
+  .timer-wrap { width: 100%; background: #0d0d1a; padding: 10px 20px; display: flex; align-items: center; gap: 12px; }
   .timer-label { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
-
-  .timer-bar-bg {
-    flex: 1;
-    height: 14px;
-    background: #2a2a4a;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  .timer-bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--green), var(--yellow));
-    border-radius: 8px;
-    transition: width 0.5s linear, background 0.5s;
-  }
-
+  .timer-bar-bg { flex: 1; height: 14px; background: #2a2a4a; border-radius: 8px; overflow: hidden; }
+  .timer-bar { height: 100%; background: linear-gradient(90deg, var(--green), var(--yellow)); border-radius: 8px; transition: width 0.5s linear, background 0.5s; }
   .timer-bar.danger { background: linear-gradient(90deg, var(--accent), #ff6b6b); animation: pulse 0.5s infinite alternate; }
-
-  @keyframes pulse { from { opacity: 1; } to { opacity: 0.6; } }
-
+  @keyframes pulse { from { opacity:1; } to { opacity:0.6; } }
   .timer-num { font-size: 1.1rem; font-weight: 800; color: var(--yellow); min-width: 36px; text-align: right; }
   .timer-num.danger { color: var(--accent); }
-
-  .stats-bar {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    background: #0d0d1a;
-    width: 100%;
-    padding: 8px 20px;
-    font-size: 0.82rem;
-    border-bottom: 1px solid var(--border);
-  }
-
+  .stats-bar { display: flex; gap: 16px; justify-content: center; background: #0d0d1a; width: 100%; padding: 8px 20px; font-size: 0.82rem; border-bottom: 1px solid var(--border); }
   .stat { display: flex; align-items: center; gap: 6px; color: var(--muted); }
   .stat-val { font-weight: 800; color: var(--yellow); }
 
-  .main {
-    display: flex;
-    gap: 16px;
-    padding: 16px;
-    width: 100%;
-    max-width: 960px;
-    flex-wrap: wrap;
-  }
-
-  .panel {
-    background: var(--card);
-    border-radius: 16px;
-    border: 1px solid var(--border);
-    overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-  }
-
-  .panel-header {
-    padding: 10px 16px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
+  /* ===== メインレイアウト ===== */
+  .main { display: flex; gap: 16px; padding: 16px; width: 100%; max-width: 1000px; flex-wrap: wrap; }
+  .panel { background: var(--card); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+  .panel-header { padding: 10px 16px; font-size: 0.85rem; font-weight: 700; }
   .ph-red { background: linear-gradient(135deg, #c0392b, #e74c3c); }
   .ph-blue { background: linear-gradient(135deg, #1a1a4e, #2c3e7a); }
   .ph-green { background: linear-gradient(135deg, #0a6e3f, #1a9e5a); }
 
-  .selected-area { flex: 1; min-width: 260px; }
-
-  .selected-slots {
-    display: flex;
-    gap: 12px;
-    padding: 16px;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-
-  .slot {
-    width: 80px;
-    height: 80px;
-    border: 2px dashed #3a3a6a;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #0d0d1a;
-    transition: all 0.2s;
+  /* ===== 散らばりエリア ===== */
+  .floor-area { flex: 2; min-width: 320px; }
+  .floor {
     position: relative;
-    overflow: hidden;
+    min-height: 340px;
+    padding: 12px;
+    background: repeating-linear-gradient(45deg, #0d0d1a, #0d0d1a 10px, #111125 10px, #111125 20px);
   }
 
-  .slot.filled {
-    border-style: solid;
-    border-color: var(--accent);
-    background: rgba(233,69,96,0.1);
-  }
-
-  .slot .remove-btn {
+  /* ===== ドラッグ靴下 ===== */
+  .sock-draggable {
     position: absolute;
-    top: -8px; right: -8px;
-    width: 22px; height: 22px;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    font-size: 0.65rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
-  }
-
-  .match-btn {
-    background: linear-gradient(135deg, var(--accent), #c0392b);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 12px 22px;
-    font-family: 'M PLUS Rounded 1c', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.1s, box-shadow 0.1s;
-    box-shadow: 0 4px 16px rgba(233,69,96,0.4);
-  }
-
-  .match-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(233,69,96,0.6); }
-  .match-btn:active { transform: translateY(1px); }
-  .match-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
-
-  .basket { flex: 1.4; min-width: 280px; }
-
-  .basket-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    padding: 12px;
-    min-height: 200px;
-  }
-
-  .pairs-tray { flex: 1; min-width: 260px; }
-
-  .pairs-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 12px;
-    min-height: 60px;
-  }
-
-  .pair-chip {
-    background: rgba(15,155,88,0.2);
-    border: 1px solid var(--green);
-    border-radius: 20px;
-    padding: 4px 10px;
-    font-size: 0.78rem;
-    animation: popIn 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    color: #a9dfbf;
-  }
-
-  @keyframes popIn {
-    0% { transform: scale(0) rotate(-10deg); }
-    70% { transform: scale(1.15) rotate(2deg); }
-    100% { transform: scale(1) rotate(0); }
-  }
-
-  .sock-card {
-    width: 100%;
-    aspect-ratio: 1;
+    width: 72px;
+    height: 72px;
     border-radius: 14px;
     border: 2px solid var(--border);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
-    position: relative;
-    overflow: hidden;
+    cursor: grab;
     background: #0d0d1a;
     user-select: none;
+    transition: box-shadow 0.15s, border-color 0.15s;
+    z-index: 1;
+  }
+  .sock-draggable:hover { border-color: #4a4a8a; box-shadow: 0 8px 24px rgba(0,0,0,0.6); z-index: 10; }
+  .sock-draggable.dragging { cursor: grabbing; box-shadow: 0 16px 40px rgba(0,0,0,0.8); z-index: 1000; opacity: 0.92; transform: scale(1.08) rotate(3deg); border-color: var(--accent); }
+  .sock-draggable.bomb { border-color: #f39c12; animation: bombGlow 1s infinite alternate; }
+  .sock-draggable svg { width: 56%; height: 56%; pointer-events: none; }
+  .sock-name-small { font-size: 0.34rem; color: var(--muted); font-weight: 700; pointer-events: none; }
+  .bomb-icon { position: absolute; top: 2px; right: 3px; font-size: 0.8rem; pointer-events: none; }
+  @keyframes bombGlow { from { box-shadow: 0 0 6px rgba(243,156,18,0.3); } to { box-shadow: 0 0 18px rgba(243,156,18,0.9); } }
+
+  /* ===== ドロップゾーン ===== */
+  .drop-zone-wrap { flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 14px; }
+
+  .drop-slots { display: flex; gap: 10px; padding: 14px; align-items: center; flex-wrap: wrap; }
+  .drop-slot {
+    width: 80px; height: 80px;
+    border: 2px dashed #3a3a6a;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    background: #0d0d1a;
+    transition: all 0.2s;
+    position: relative;
+    overflow: visible;
+  }
+  .drop-slot.over { border-color: var(--yellow); background: rgba(245,166,35,0.1); transform: scale(1.05); }
+  .drop-slot.filled { border-style: solid; border-color: var(--accent); background: rgba(233,69,96,0.08); }
+  .drop-slot svg { width: 60%; height: 60%; pointer-events: none; }
+  .drop-slot .remove-btn {
+    position: absolute; top: -8px; right: -8px;
+    width: 20px; height: 20px;
+    background: var(--accent); color: white; border: none; border-radius: 50%;
+    font-size: 0.6rem; cursor: pointer; z-index: 5;
+    display: flex; align-items: center; justify-content: center;
   }
 
-  .sock-card:hover {
-    transform: translateY(-3px) rotate(-2deg);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-    border-color: #4a4a8a;
+  .match-btn {
+    background: linear-gradient(135deg, var(--accent), #c0392b);
+    color: white; border: none; border-radius: 12px; padding: 11px 20px;
+    font-family: 'M PLUS Rounded 1c', sans-serif; font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 4px 16px rgba(233,69,96,0.4);
   }
+  .match-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(233,69,96,0.6); }
+  .match-btn:active { transform: translateY(1px); }
+  .match-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
 
-  .sock-card.selected {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(233,69,96,0.4);
-    transform: scale(0.95);
-  }
+  .pairs-grid { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; min-height: 56px; }
+  .pair-chip { background: rgba(15,155,88,0.2); border: 1px solid var(--green); border-radius: 20px; padding: 4px 10px; font-size: 0.75rem; animation: popIn 0.3s ease; display: flex; align-items: center; gap: 4px; color: #a9dfbf; }
+  @keyframes popIn { 0%{transform:scale(0) rotate(-10deg);} 70%{transform:scale(1.15) rotate(2deg);} 100%{transform:scale(1) rotate(0);} }
 
-  .sock-card.bomb {
-    border-color: #f39c12;
-    animation: bombGlow 1s infinite alternate;
-  }
-
-  @keyframes bombGlow {
-    from { box-shadow: 0 0 6px rgba(243,156,18,0.3); }
-    to { box-shadow: 0 0 18px rgba(243,156,18,0.8); }
-  }
-
-  .sock-card svg { width: 58%; height: 58%; }
-
-  .sock-name {
-    font-size: 0.38rem;
-    color: var(--muted);
-    margin-top: 2px;
-    font-weight: 700;
-  }
-
-  .bomb-icon {
-    position: absolute;
-    top: 3px; right: 4px;
-    font-size: 0.85rem;
-  }
-
-  .toast {
-    position: fixed;
-    top: 100px;
-    left: 50%;
-    transform: translateX(-50%) translateY(-16px);
-    background: #1a1a2e;
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 10px 22px;
-    border-radius: 40px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s, transform 0.2s;
-    z-index: 100;
-    white-space: nowrap;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-  }
-
+  .toast { position: fixed; top: 100px; left: 50%; transform: translateX(-50%) translateY(-16px); background: #1a1a2e; border: 1px solid var(--border); color: var(--text); padding: 10px 22px; border-radius: 40px; font-size: 0.9rem; font-weight: 700; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 2000; white-space: nowrap; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  .overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.75);
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(4px);
-  }
-
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 3000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
   .overlay.show { display: flex; }
-
-  .result-box {
-    background: var(--card);
-    border: 2px solid var(--border);
-    border-radius: 24px;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.7);
-    padding: 36px 44px;
-    text-align: center;
-    max-width: 380px;
-    width: 90%;
-  }
-
+  .result-box { background: var(--card); border: 2px solid var(--border); border-radius: 24px; box-shadow: 0 24px 64px rgba(0,0,0,0.7); padding: 36px 44px; text-align: center; max-width: 380px; width: 90%; }
   .result-box h2 { font-size: 2.2rem; font-weight: 800; margin-bottom: 8px; }
   .result-box .result-sub { color: var(--muted); margin-bottom: 16px; font-size: 0.88rem; line-height: 1.8; }
-
-  .result-btn {
-    background: linear-gradient(135deg, var(--accent), #c0392b);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 13px 32px;
-    font-family: 'M PLUS Rounded 1c', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 4px 16px rgba(233,69,96,0.4);
-    margin-top: 8px;
-    transition: transform 0.1s;
-  }
-
-  .result-btn:hover { transform: translateY(-2px); }
-
-  .lonely-badge {
-    background: rgba(245,166,35,0.15);
-    border: 1px solid var(--yellow);
-    border-radius: 10px;
-    padding: 8px 14px;
-    font-size: 0.78rem;
-    color: var(--yellow);
-    margin-top: 10px;
-    line-height: 1.5;
-  }
-
-  @keyframes shake {
-    0%,100% { transform: translateX(0); }
-    20% { transform: translateX(-8px); }
-    40% { transform: translateX(8px); }
-    60% { transform: translateX(-6px); }
-    80% { transform: translateX(6px); }
-  }
-
+  .result-btn { background: linear-gradient(135deg, var(--accent), #c0392b); color: white; border: none; border-radius: 12px; padding: 13px 32px; font-family: 'M PLUS Rounded 1c', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(233,69,96,0.4); margin-top: 8px; }
+  .lonely-badge { background: rgba(245,166,35,0.15); border: 1px solid var(--yellow); border-radius: 10px; padding: 8px 14px; font-size: 0.78rem; color: var(--yellow); margin-top: 10px; line-height: 1.5; }
+  @keyframes shake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-8px);} 40%{transform:translateX(8px);} 60%{transform:translateX(-6px);} 80%{transform:translateX(6px);} }
   .shake { animation: shake 0.4s ease; }
-
-  .boom {
-    position: fixed;
-    font-size: 3rem;
-    pointer-events: none;
-    z-index: 999;
-    animation: boomAnim 0.6s ease forwards;
-  }
-
-  @keyframes boomAnim {
-    0% { transform: scale(0.5); opacity: 1; }
-    50% { transform: scale(2); opacity: 1; }
-    100% { transform: scale(3); opacity: 0; }
-  }
+  .boom { position: fixed; font-size: 3rem; pointer-events: none; z-index: 999; animation: boomAnim 0.6s ease forwards; }
+  @keyframes boomAnim { 0%{transform:scale(0.5);opacity:1;} 50%{transform:scale(2);opacity:1;} 100%{transform:scale(3);opacity:0;} }
 </style>
 </head>
 <body>
 
 <header>
   <h1>🧦 靴下の片割れ探し</h1>
-  <div class="subtitle">洗濯物の中からペアを見つけろ！爆弾に注意…💣</div>
+  <div class="subtitle">床に散らばった靴下をドラッグしてペアにしろ！💣爆弾注意</div>
 </header>
 
 <div class="timer-wrap">
   <span class="timer-label">⏱ 残り時間</span>
-  <div class="timer-bar-bg">
-    <div class="timer-bar" id="timer-bar" style="width:100%"></div>
-  </div>
+  <div class="timer-bar-bg"><div class="timer-bar" id="timer-bar" style="width:100%"></div></div>
   <span class="timer-num" id="timer-num">60</span>
 </div>
 
@@ -411,17 +147,26 @@
 </div>
 
 <div class="main">
-  <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:14px;">
-    <div class="panel selected-area">
-      <div class="panel-header ph-red">🖐 選んだ靴下（2枚選んでペアにする）</div>
-      <div class="selected-slots">
-        <div class="slot" id="slot-a"><span style="color:#3a3a6a;font-size:1.2rem">?</span></div>
-        <div style="font-size:1.4rem;color:#3a3a6a;">＋</div>
-        <div class="slot" id="slot-b"><span style="color:#3a3a6a;font-size:1.2rem">?</span></div>
+
+  <!-- 床エリア：靴下が散らばっている -->
+  <div class="panel floor-area">
+    <div class="panel-header ph-blue">🏠 床（ドラッグして右のスロットへ！）</div>
+    <div class="floor" id="floor"></div>
+  </div>
+
+  <!-- 右：ドロップ + ペアトレイ -->
+  <div class="drop-zone-wrap">
+    <div class="panel">
+      <div class="panel-header ph-red">🎯 ここにドロップ（2枚揃えてペアに！）</div>
+      <div class="drop-slots">
+        <div class="drop-slot" id="slot-a" data-slot="0"></div>
+        <div style="font-size:1.3rem;color:#3a3a6a;">＋</div>
+        <div class="drop-slot" id="slot-b" data-slot="1"></div>
         <button class="match-btn" id="match-btn" disabled onclick="tryMatch()">ペアにする！</button>
       </div>
     </div>
-    <div class="panel pairs-tray">
+
+    <div class="panel">
       <div class="panel-header ph-green">🎉 完成したペア</div>
       <div class="pairs-grid" id="pairs-grid">
         <span style="color:#3a3a6a;font-size:0.78rem;padding:4px;">まだなし</span>
@@ -429,14 +174,9 @@
     </div>
   </div>
 
-  <div class="panel basket">
-    <div class="panel-header ph-blue">🧺 洗濯かご（クリックして選ぼう）</div>
-    <div class="basket-grid" id="basket-grid"></div>
-  </div>
 </div>
 
 <div class="toast" id="toast"></div>
-
 <div class="overlay" id="overlay">
   <div class="result-box">
     <h2 id="result-title">🎊 完了！</h2>
@@ -447,186 +187,282 @@
 </div>
 
 <script>
-// ===== 靴下SVGデザイン =====
 const DESIGNS = {
-  A: { base:'#e74c3c', cuff:'#c0392b', stroke:'#922b21', heel:'#c0392b', stripe1:'#fff', stripe2:'#ff8a80', dots:null, check:null, star:null, heart:null },
-  B: { base:'#2c3e7a', cuff:'#1a2a6e', stroke:'#0d1b4a', heel:'#1a2a6e', stripe1:null, stripe2:null, dots:null, check:'#5dade2', star:null, heart:null },
-  C: { base:'#f4d03f', cuff:'#d4ac0d', stroke:'#b7950b', heel:'#d4ac0d', stripe1:null, stripe2:null, dots:'#e74c3c', check:null, star:null, heart:null },
-  D: { base:'#27ae60', cuff:'#1e8449', stroke:'#196f3d', heel:'#1e8449', stripe1:'#fff', stripe2:'#a9dfbf', dots:null, check:null, star:null, heart:null },
-  E: { base:'#e67e22', cuff:'#ca6f1e', stroke:'#a04000', heel:'#ca6f1e', stripe1:'#fff', stripe2:'#fad7a0', dots:null, check:null, star:null, heart:null },
-  F: { base:'#8e44ad', cuff:'#76359a', stroke:'#5b2c6f', heel:'#76359a', stripe1:null, stripe2:null, dots:null, check:null, star:'#f4d03f', heart:null },
-  G: { base:'#2c3e50', cuff:'#1a252f', stroke:'#0d1117', heel:'#1a252f', stripe1:'#aab7b8', stripe2:null, dots:null, check:null, star:null, heart:null },
-  H: { base:'#ecf0f1', cuff:'#bdc3c7', stroke:'#95a5a6', heel:'#bdc3c7', stripe1:null, stripe2:null, dots:null, check:null, star:null, heart:'#e74c3c' },
-  X: { base:'#f8c8d4', cuff:'#f48fb1', stroke:'#e91e63', heel:'#f48fb1', stripe1:null, stripe2:null, dots:'#ff4081', check:null, star:null, heart:'#e91e63' },
+  A:{base:'#e74c3c',cuff:'#c0392b',stroke:'#922b21',heel:'#c0392b',stripe1:'#fff',stripe2:'#ff8a80',dots:null,check:null,star:null,heart:null},
+  B:{base:'#2c3e7a',cuff:'#1a2a6e',stroke:'#0d1b4a',heel:'#1a2a6e',stripe1:null,stripe2:null,dots:null,check:'#5dade2',star:null,heart:null},
+  C:{base:'#f4d03f',cuff:'#d4ac0d',stroke:'#b7950b',heel:'#d4ac0d',stripe1:null,stripe2:null,dots:'#e74c3c',check:null,star:null,heart:null},
+  D:{base:'#27ae60',cuff:'#1e8449',stroke:'#196f3d',heel:'#1e8449',stripe1:'#fff',stripe2:'#a9dfbf',dots:null,check:null,star:null,heart:null},
+  E:{base:'#e67e22',cuff:'#ca6f1e',stroke:'#a04000',heel:'#ca6f1e',stripe1:'#fff',stripe2:'#fad7a0',dots:null,check:null,star:null,heart:null},
+  F:{base:'#8e44ad',cuff:'#76359a',stroke:'#5b2c6f',heel:'#76359a',stripe1:null,stripe2:null,dots:null,check:null,star:'#f4d03f',heart:null},
+  G:{base:'#2c3e50',cuff:'#1a252f',stroke:'#0d1117',heel:'#1a252f',stripe1:'#aab7b8',stripe2:null,dots:null,check:null,star:null,heart:null},
+  H:{base:'#ecf0f1',cuff:'#bdc3c7',stroke:'#95a5a6',heel:'#bdc3c7',stripe1:null,stripe2:null,dots:null,check:null,star:null,heart:'#e74c3c'},
+  X:{base:'#f8c8d4',cuff:'#f48fb1',stroke:'#e91e63',heel:'#f48fb1',stripe1:null,stripe2:null,dots:'#ff4081',check:null,star:null,heart:'#e91e63'},
 };
 
 function sockSVG(id) {
-  const d = DESIGNS[id] || DESIGNS['G'];
+  const d=DESIGNS[id]||DESIGNS['G'];
   return `<svg viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
     <path d="M18,4 L42,4 L42,48 Q42,52 46,54 L54,60 Q58,64 56,70 Q54,76 48,77 L28,77 Q22,77 18,72 L12,64 Q8,58 12,52 L18,48 Z" fill="${d.base}" stroke="${d.stroke}" stroke-width="2"/>
     <path d="M18,4 L42,4 L42,18 L18,18 Z" fill="${d.cuff}" opacity="0.9"/>
-    ${d.stripe1 ? `<line x1="18" y1="20" x2="42" y2="20" stroke="${d.stripe1}" stroke-width="3"/>` : ''}
-    ${d.stripe2 ? `<line x1="18" y1="25" x2="42" y2="25" stroke="${d.stripe2}" stroke-width="3"/>` : ''}
-    ${d.dots ? `<circle cx="25" cy="30" r="2.5" fill="${d.dots}" opacity="0.8"/><circle cx="33" cy="35" r="2.5" fill="${d.dots}" opacity="0.8"/><circle cx="27" cy="42" r="2.5" fill="${d.dots}" opacity="0.8"/>` : ''}
-    ${d.check ? `<line x1="18" y1="30" x2="42" y2="30" stroke="${d.check}" stroke-width="2" opacity="0.5"/><line x1="18" y1="38" x2="42" y2="38" stroke="${d.check}" stroke-width="2" opacity="0.5"/><line x1="26" y1="18" x2="26" y2="50" stroke="${d.check}" stroke-width="2" opacity="0.5"/><line x1="34" y1="18" x2="34" y2="50" stroke="${d.check}" stroke-width="2" opacity="0.5"/>` : ''}
-    ${d.star ? `<text x="22" y="38" font-size="10" fill="${d.star}" opacity="0.9">★</text><text x="32" y="30" font-size="8" fill="${d.star}" opacity="0.7">★</text>` : ''}
-    ${d.heart ? `<text x="23" y="42" font-size="13" fill="${d.heart}" opacity="0.9">♥</text>` : ''}
+    ${d.stripe1?`<line x1="18" y1="20" x2="42" y2="20" stroke="${d.stripe1}" stroke-width="3"/>`:''}
+    ${d.stripe2?`<line x1="18" y1="25" x2="42" y2="25" stroke="${d.stripe2}" stroke-width="3"/>`:''}
+    ${d.dots?`<circle cx="25" cy="30" r="2.5" fill="${d.dots}" opacity="0.8"/><circle cx="33" cy="35" r="2.5" fill="${d.dots}" opacity="0.8"/><circle cx="27" cy="42" r="2.5" fill="${d.dots}" opacity="0.8"/>`:''}
+    ${d.check?`<line x1="18" y1="30" x2="42" y2="30" stroke="${d.check}" stroke-width="2" opacity="0.5"/><line x1="18" y1="38" x2="42" y2="38" stroke="${d.check}" stroke-width="2" opacity="0.5"/><line x1="26" y1="18" x2="26" y2="50" stroke="${d.check}" stroke-width="2" opacity="0.5"/><line x1="34" y1="18" x2="34" y2="50" stroke="${d.check}" stroke-width="2" opacity="0.5"/>`:''}
+    ${d.star?`<text x="22" y="38" font-size="10" fill="${d.star}" opacity="0.9">★</text><text x="32" y="30" font-size="8" fill="${d.star}" opacity="0.7">★</text>`:''}
+    ${d.heart?`<text x="23" y="42" font-size="13" fill="${d.heart}" opacity="0.9">♥</text>`:''}
     <path d="M18,48 Q12,52 12,58 L18,62 Z" fill="${d.heel}" opacity="0.7"/>
     <path d="M20,72 Q28,78 38,76 Q45,74 48,68 L28,68 Z" fill="${d.heel}" opacity="0.7"/>
   </svg>`;
 }
 
-const SOCK_TYPES = [
+const SOCK_TYPES=[
   {id:'A',name:'赤ボーダー'},{id:'B',name:'紺チェック'},{id:'C',name:'黄色水玉'},
   {id:'D',name:'緑ストライプ'},{id:'E',name:'オレンジ縞'},{id:'F',name:'紫星柄'},
   {id:'G',name:'黒シンプル'},{id:'H',name:'白ハート'},
 ];
-const LONELY = {id:'X', name:'謎の花柄', lonely:true};
-const MAX_TIME = 60;
+const LONELY={id:'X',name:'謎の花柄',lonely:true};
+const MAX_TIME=60;
 
-let socks=[], selected=[null,null], pairs=0, totalPairs=0, misses=0, bombs=0;
-let timeLeft=MAX_TIME, timerInterval=null;
+let socks=[],slotData=[null,null],pairs=0,totalPairs=0,misses=0,bombs=0;
+let timeLeft=MAX_TIME,timerInterval=null;
+let dragUid=null,dragEl=null,dragOffX=0,dragOffY=0;
 
-function startGame() {
+function startGame(){
   clearInterval(timerInterval);
-  timeLeft=MAX_TIME; pairs=0; misses=0; bombs=0; selected=[null,null];
+  timeLeft=MAX_TIME;pairs=0;misses=0;bombs=0;slotData=[null,null];
   document.getElementById('overlay').classList.remove('show');
-  updateStats(); updateTimerUI();
+  updateStats();updateTimerUI();
 
-  const pairTypes = SOCK_TYPES.slice(0,7);
-  totalPairs = pairTypes.length;
+  const pairTypes=SOCK_TYPES.slice(0,7);
+  totalPairs=pairTypes.length;
   socks=[];
   let id=0;
   pairTypes.forEach(t=>{
-    socks.push({uid:id++,type:t,paired:false,selected:false,bomb:false});
-    socks.push({uid:id++,type:t,paired:false,selected:false,bomb:false});
+    socks.push({uid:id++,type:t,paired:false,bomb:false,x:0,y:0});
+    socks.push({uid:id++,type:t,paired:false,bomb:false,x:0,y:0});
   });
-  socks.push({uid:id++,type:LONELY,paired:false,selected:false,bomb:false,lonely:true});
+  socks.push({uid:id++,type:LONELY,paired:false,bomb:false,lonely:true,x:0,y:0});
   socks.sort(()=>Math.random()-0.5);
 
-  // 爆弾3枚ランダム設定
-  let nonPaired = socks.filter(s=>!s.lonely);
-  for(let i=0;i<3;i++) {
-    let idx = Math.floor(Math.random()*nonPaired.length);
-    nonPaired[idx].bomb = true;
-    nonPaired.splice(idx,1);
+  // 爆弾3枚
+  let nonL=socks.filter(s=>!s.lonely);
+  for(let i=0;i<3;i++){
+    let idx=Math.floor(Math.random()*nonL.length);
+    nonL[idx].bomb=true;nonL.splice(idx,1);
   }
 
   document.getElementById('total-pairs').textContent=totalPairs;
   document.getElementById('pairs-grid').innerHTML='<span style="color:#3a3a6a;font-size:0.78rem;padding:4px;">まだなし</span>';
-  resetSlots(); renderBasket();
+  clearSlot(0);clearSlot(1);
+  renderFloor();
 
   timerInterval=setInterval(()=>{
-    timeLeft--;
-    updateTimerUI();
+    timeLeft--;updateTimerUI();
     if(timeLeft<=0){clearInterval(timerInterval);showResult(false);}
   },1000);
 }
 
-function updateTimerUI() {
-  const pct=(timeLeft/MAX_TIME)*100;
-  const bar=document.getElementById('timer-bar');
-  const num=document.getElementById('timer-num');
-  bar.style.width=pct+'%';
-  num.textContent=timeLeft;
-  if(timeLeft<=15){bar.classList.add('danger');num.classList.add('danger');}
-  else{bar.classList.remove('danger');num.classList.remove('danger');}
-}
+function renderFloor(){
+  const floor=document.getElementById('floor');
+  floor.innerHTML='';
+  const W=floor.clientWidth||400, H=floor.clientHeight||340;
+  const CARD=72, PAD=10;
 
-function renderBasket() {
-  const grid=document.getElementById('basket-grid');
-  grid.innerHTML='';
-  socks.filter(s=>!s.paired).forEach(sock=>{
-    const card=document.createElement('div');
-    card.className='sock-card'+(sock.selected?' selected':'')+(sock.bomb?' bomb':'');
-    card.innerHTML=sockSVG(sock.type.id)+`<span class="sock-name">${sock.type.name}</span>`;
-    if(sock.bomb) card.innerHTML+='<span class="bomb-icon">💣</span>';
-    card.onclick=()=>selectSock(sock.uid);
-    grid.appendChild(card);
+  socks.filter(s=>!s.paired).forEach((sock,i)=>{
+    // 初回のみランダム配置
+    if(!sock.x&&!sock.y){
+      sock.x=PAD+Math.random()*(W-CARD-PAD*2);
+      sock.y=PAD+Math.random()*(H-CARD-PAD*2);
+      sock.rot=(Math.random()-0.5)*30;
+    }
+    const el=document.createElement('div');
+    el.className='sock-draggable'+(sock.bomb?' bomb':'');
+    el.style.left=sock.x+'px';
+    el.style.top=sock.y+'px';
+    el.style.transform=`rotate(${sock.rot}deg)`;
+    el.dataset.uid=sock.uid;
+    el.innerHTML=sockSVG(sock.type.id)+`<span class="sock-name-small">${sock.type.name}</span>`;
+    if(sock.bomb)el.innerHTML+='<span class="bomb-icon">💣</span>';
+
+    // マウスドラッグ
+    el.addEventListener('mousedown',e=>{e.preventDefault();startDrag(e.clientX,e.clientY,sock.uid,el);});
+    // タッチドラッグ
+    el.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];startDrag(t.clientX,t.clientY,sock.uid,el);},{passive:false});
+
+    floor.appendChild(el);
   });
 }
 
-function selectSock(uid) {
-  const sock=socks.find(s=>s.uid===uid);
-  if(!sock||sock.paired) return;
-  if(sock.selected){
-    sock.selected=false;
-    if(selected[0]===uid)selected[0]=null; else selected[1]=null;
-  } else {
-    if(selected[0]===null){selected[0]=uid;sock.selected=true;}
-    else if(selected[1]===null&&selected[0]!==uid){selected[1]=uid;sock.selected=true;}
-  }
-  renderBasket(); updateSlots();
-  document.getElementById('match-btn').disabled=selected.filter(s=>s!==null).length<2;
+function startDrag(cx,cy,uid,el){
+  dragUid=uid;dragEl=el;
+  const rect=el.getBoundingClientRect();
+  dragOffX=cx-rect.left;dragOffY=cy-rect.top;
+  el.classList.add('dragging');
+  el.style.zIndex=1000;
 }
 
-function updateSlots() {
-  ['a','b'].forEach((slot,i)=>{
-    const el=document.getElementById('slot-'+slot);
-    const uid=selected[i];
-    if(uid!==null){
-      const sock=socks.find(s=>s.uid===uid);
-      el.className='slot filled';
-      el.innerHTML=sockSVG(sock.type.id)+`<button class="remove-btn" onclick="removeSock(${uid})">✕</button>`;
+document.addEventListener('mousemove',e=>onDragMove(e.clientX,e.clientY));
+document.addEventListener('touchmove',e=>{if(dragEl){e.preventDefault();const t=e.touches[0];onDragMove(t.clientX,t.clientY);}},{passive:false});
+
+function onDragMove(cx,cy){
+  if(!dragEl)return;
+  const floor=document.getElementById('floor');
+  const fRect=floor.getBoundingClientRect();
+  let nx=cx-fRect.left-dragOffX;
+  let ny=cy-fRect.top-dragOffY;
+  dragEl.style.left=nx+'px';
+  dragEl.style.top=ny+'px';
+
+  // スロットのハイライト
+  ['slot-a','slot-b'].forEach(sid=>{
+    const s=document.getElementById(sid);
+    const sr=s.getBoundingClientRect();
+    if(cx>=sr.left&&cx<=sr.right&&cy>=sr.top&&cy<=sr.bottom){
+      s.classList.add('over');
     } else {
-      el.className='slot';
-      el.innerHTML='<span style="color:#3a3a6a;font-size:1.2rem">?</span>';
+      s.classList.remove('over');
     }
   });
 }
 
-function removeSock(uid) {
+document.addEventListener('mouseup',e=>endDrag(e.clientX,e.clientY));
+document.addEventListener('touchend',e=>{
+  if(dragEl){
+    const t=e.changedTouches[0];
+    endDrag(t.clientX,t.clientY);
+  }
+});
+
+function endDrag(cx,cy){
+  if(!dragEl||dragUid===null)return;
+  dragEl.classList.remove('dragging');
+
+  // スロットにドロップされたか判定
+  let dropped=false;
+  ['slot-a','slot-b'].forEach((sid,i)=>{
+    const s=document.getElementById(sid);
+    s.classList.remove('over');
+    const sr=s.getBoundingClientRect();
+    if(cx>=sr.left&&cx<=sr.right&&cy>=sr.top&&cy<=sr.bottom){
+      // すでに同じUID入っていたらスキップ
+      if(slotData[0]===dragUid||slotData[1]===dragUid) { dropped=true; return; }
+      // スロットが空いているか
+      if(slotData[i]===null){
+        setSlot(i,dragUid);
+        dropped=true;
+      } else if(slotData[i]!==null){
+        // 入れ替え：前のやつを床に返す
+        const oldUid=slotData[i];
+        returnToFloor(oldUid);
+        setSlot(i,dragUid);
+        dropped=true;
+      }
+    }
+  });
+
+  // 床の位置を更新
+  const sock=socks.find(s=>s.uid===dragUid);
+  if(sock){
+    const floor=document.getElementById('floor');
+    const fRect=floor.getBoundingClientRect();
+    sock.x=parseFloat(dragEl.style.left);
+    sock.y=parseFloat(dragEl.style.top);
+  }
+
+  dragEl=null;dragUid=null;
+  document.getElementById('match-btn').disabled=(slotData[0]===null||slotData[1]===null);
+}
+
+function setSlot(i,uid){
+  slotData[i]=uid;
   const sock=socks.find(s=>s.uid===uid);
-  if(sock)sock.selected=false;
-  if(selected[0]===uid)selected[0]=null; else if(selected[1]===uid)selected[1]=null;
-  renderBasket();updateSlots();
+  const slotEl=document.getElementById(i===0?'slot-a':'slot-b');
+  slotEl.className='drop-slot filled';
+  slotEl.innerHTML=sockSVG(sock.type.id)+`<button class="remove-btn" onclick="removeFromSlot(${i})">✕</button>`;
+  // 床から消す（視覚的に）
+  const el=document.querySelector(`.sock-draggable[data-uid="${uid}"]`);
+  if(el)el.style.display='none';
+}
+
+function clearSlot(i){
+  slotData[i]=null;
+  const slotEl=document.getElementById(i===0?'slot-a':'slot-b');
+  slotEl.className='drop-slot';
+  slotEl.innerHTML='';
+}
+
+function removeFromSlot(i){
+  const uid=slotData[i];
+  if(uid===null)return;
+  clearSlot(i);
+  returnToFloor(uid);
   document.getElementById('match-btn').disabled=true;
 }
 
-function resetSlots(){selected=[null,null];updateSlots();document.getElementById('match-btn').disabled=true;}
+function returnToFloor(uid){
+  const el=document.querySelector(`.sock-draggable[data-uid="${uid}"]`);
+  if(el)el.style.display='flex';
+}
 
-function tryMatch() {
-  const[uid1,uid2]=selected;
+function tryMatch(){
+  const[uid1,uid2]=slotData;
   if(uid1===null||uid2===null)return;
   const s1=socks.find(s=>s.uid===uid1),s2=socks.find(s=>s.uid===uid2);
 
   if(s1.bomb||s2.bomb){
-    bombs++; misses++;
+    bombs++;misses++;
     timeLeft=Math.max(0,timeLeft-10);
-    updateTimerUI();
-    showBoom();
+    updateTimerUI();showBoom();
     showToast('💣 爆発！ -10秒！！');
     if(s1.bomb)s1.bomb=false; else s2.bomb=false;
     updateStats();
-    s1.selected=s2.selected=false; selected=[null,null];
+    clearSlot(0);clearSlot(1);
+    returnToFloor(uid1);returnToFloor(uid2);
+    renderFloor();
     document.body.classList.add('shake');
     setTimeout(()=>document.body.classList.remove('shake'),400);
-    renderBasket(); resetSlots();
+    document.getElementById('match-btn').disabled=true;
     if(timeLeft<=0){clearInterval(timerInterval);setTimeout(()=>showResult(false),500);}
     return;
   }
 
   if(s1.type.id===s2.type.id&&!s1.lonely&&!s2.lonely){
-    s1.paired=s2.paired=true; s1.selected=s2.selected=false; pairs++;
+    s1.paired=s2.paired=true;pairs++;
+    clearSlot(0);clearSlot(1);
+    // 床からも消す
+    [uid1,uid2].forEach(uid=>{
+      const el=document.querySelector(`.sock-draggable[data-uid="${uid}"]`);
+      if(el)el.remove();
+    });
     const grid=document.getElementById('pairs-grid');
     if(grid.querySelector('span[style]'))grid.innerHTML='';
     const chip=document.createElement('div');
     chip.className='pair-chip';
     const mini=document.createElement('span');
     mini.innerHTML=sockSVG(s1.type.id);
-    mini.querySelector('svg').style.cssText='width:20px;height:20px;';
+    mini.querySelector('svg').style.cssText='width:18px;height:18px;';
     chip.appendChild(mini);
     chip.appendChild(Object.assign(document.createElement('span'),{textContent:s1.type.name}));
     grid.appendChild(chip);
     showToast('✅ '+s1.type.name+' ペア完成！');
-    resetSlots(); renderBasket(); updateStats();
+    updateStats();
+    document.getElementById('match-btn').disabled=true;
     if(pairs>=totalPairs){clearInterval(timerInterval);setTimeout(()=>showResult(true),400);}
   } else {
-    misses++; updateStats();
+    misses++;updateStats();
     showToast('❌ 違う！片割れだ…');
-    s1.selected=s2.selected=false; selected=[null,null];
-    renderBasket(); resetSlots();
+    clearSlot(0);clearSlot(1);
+    returnToFloor(uid1);returnToFloor(uid2);
+    document.getElementById('match-btn').disabled=true;
   }
+}
+
+function updateTimerUI(){
+  const pct=(timeLeft/MAX_TIME)*100;
+  const bar=document.getElementById('timer-bar'),num=document.getElementById('timer-num');
+  bar.style.width=pct+'%';num.textContent=timeLeft;
+  if(timeLeft<=15){bar.classList.add('danger');num.classList.add('danger');}
+  else{bar.classList.remove('danger');num.classList.remove('danger');}
 }
 
 function updateStats(){
@@ -637,13 +473,13 @@ function updateStats(){
 
 function showToast(msg){
   const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
+  t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),1800);
 }
 
 function showBoom(){
   const el=document.createElement('div');
-  el.className='boom'; el.textContent='💥';
+  el.className='boom';el.textContent='💥';
   el.style.left=(Math.random()*60+20)+'%';
   el.style.top=(Math.random()*40+20)+'%';
   document.body.appendChild(el);
@@ -652,8 +488,7 @@ function showBoom(){
 
 function showResult(cleared){
   document.getElementById('result-title').textContent=cleared?'🎊 クリア！':'⏰ タイムアップ！';
-  document.getElementById('result-msg').innerHTML=
-    `ペア: ${pairs}/${totalPairs}　ミス: ${misses}回　爆発: ${bombs}回<br>残り時間: ${timeLeft}秒`;
+  document.getElementById('result-msg').innerHTML=`ペア: ${pairs}/${totalPairs}　ミス: ${misses}回　爆発: ${bombs}回<br>残り時間: ${timeLeft}秒`;
   const badge=document.getElementById('lonely-badge');
   badge.style.display='block';
   badge.textContent='🌸「謎の花柄」の片割れは永遠に見つかりませんでした';
