@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>靴下の片割れ探し</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>🧦 靴下の片割れ探し</h1>
+  <div class="subtitle">洗濯物の中からペアを見つけろ！</div>
+</header>
+
+<div class="stats-bar">
+  <div class="stat">⏱ タイム: <span class="stat-val" id="timer">0:00</span></div>
+  <div class="stat">✅ ペア: <span class="stat-val" id="pair-count">0</span> / <span id="total-pairs">0</span></div>
+  <div class="stat">❌ ミス: <span class="stat-val" id="miss-count">0</span></div>
+</div>
+
+<div class="main">
+  <div class="workbench">
+    <div class="selected-area">
+      <div class="selected-header">🖐 選んだ靴下（2枚選んでペアにする）</div>
+      <div class="selected-slots">
+        <div class="slot" id="slot-a"><span style="color:#ccc;font-size:1rem">?</span></div>
+        <div style="font-size:1.5rem; color:#2c2c2c;">＋</div>
+        <div class="slot" id="slot-b"><span style="color:#ccc;font-size:1rem">?</span></div>
+        <button class="match-btn" id="match-btn" disabled onclick="tryMatch()">ペアにする！</button>
+      </div>
+    </div>
+
+    <div class="pairs-tray">
+      <div class="pairs-header">🎉 完成したペア</div>
+      <div class="pairs-grid" id="pairs-grid">
+        <span style="color:#ccc;font-size:0.8rem;padding:4px;">まだなし</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="basket">
+    <div class="basket-header">🧺 洗濯かご（クリックして選ぼう）</div>
+    <div class="basket-grid" id="basket-grid"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="overlay">
+  <div class="result-box">
+    <h2>🎊 完了！</h2>
+    <p id="result-msg"></p>
+    <div class="lonely-badge" id="lonely-badge" style="display:none"></div>
+    <button class="result-btn" onclick="startGame()">もう一回やる</button>
+  </div>
+</div>
+
+<script src="js/sockSVG.js"></script>
+<script src="js/obstacleSVG.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
